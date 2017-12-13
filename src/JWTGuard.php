@@ -21,6 +21,11 @@ class JWTGuard implements Guard
     use GuardHelpers;
 
     /**
+     * @var \Ollieread\JWT\JWT
+     */
+    protected $jwt;
+
+    /**
      * @var string
      */
     protected $name;
@@ -42,12 +47,14 @@ class JWTGuard implements Guard
     /**
      * JWTGuard constructor.
      *
+     * @param \Ollieread\JWT\JWT                      $jwt
      * @param string                                  $name
      * @param \Illuminate\Contracts\Auth\UserProvider $provider
      * @param \Illuminate\Http\Request                $request
      */
-    public function __construct(string $name, UserProvider $provider, Request $request)
+    public function __construct(JWT $jwt, string $name, UserProvider $provider, Request $request)
     {
+        $this->jwt      = $jwt;
         $this->name     = $name;
         $this->provider = $provider;
         $this->request  = $request;
@@ -70,6 +77,7 @@ class JWTGuard implements Guard
 
         if ($header && strpos($header, 'bearer') === 0) {
             $headerParts = explode(' ', $header);
+
             return $this->token = (new Parser)->parse($headerParts[1]);
         }
 
@@ -156,15 +164,9 @@ class JWTGuard implements Guard
     public function login(): ?Token
     {
         if ($this->user) {
-            return $this->token = (new Builder)
-                ->setIssuer('testing')
-                ->setAudience('testing')
-                ->setId('something123', true)
-                ->setIssuedAt(time())
-                ->setExpiration(time() + 3600)
-                ->set('uid', $this->user->id)
-                ->set('grd', $this->name)
-                ->getToken();
+            $builder = new Builder;
+
+            return $this->token = $this->jwt->generateClaim($this->user, $builder, $this->request, $this->name);
         }
 
         return null;
