@@ -1,0 +1,33 @@
+{
+    "name": "ollieread/laravel-jwt",
+    "type": "library",
+    "description": "",
+    "license": "MIT",
+    "version": "dev-master",
+    "authors": [
+        {
+            "name": "Ollie Read",
+            "email": "labs@ollieread.com"
+        }
+    ],
+    "require": {
+        "php": "^7.1",
+        "lcobucci/jwt": "3.2.*",
+        "laravel/framework": "^5.5"
+    },
+    "autoload": {
+        "classmap": [],
+        "psr-4": {
+            "Ollieread\\JWT\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Ollieread\\JWT\\ServiceProvider"
+            ],
+            "aliases": {
+            }
+        }
+    }
+}
