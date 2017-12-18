@@ -91,7 +91,7 @@ class JWTGuard implements Guard
     {
         $header = $this->request->headers->get('authorization') ?: $this->request->server->get('HTTP_AUTHORIZATION');
 
-        if ($header && strpos($header, 'bearer') === 0) {
+        if ($header && stripos($header, 'bearer') === 0) {
             $headerParts = explode(' ', $header);
             $this->setToken((new Parser)->parse($headerParts[1]));
 
