@@ -82,7 +82,7 @@ class ServiceProvider extends BaseServiceProvider
     {
         // Register/publish the config file
         $this->publishes([
-            __DIR__ . '/../config/jwt.php', config_path('jwt.php'),
+            __DIR__ . '/../config/jwt.php' => config_path('jwt.php'),
         ]);
 
         // Extend auth with our custom guard driver
