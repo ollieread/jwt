@@ -9,7 +9,7 @@ return [
      */
     'ttl'         => env('JWT_TTL', 60),
     'ttl_refresh' => env('JWT_TTL_REFRESH', 20160),
-    'algo'        => env('JWT_ALGO', 'HS256'),
+    'algo'        => env('JWT_ALGO', \Lcobucci\JWT\Signer\Rsa\Sha256::class),
     'claims'      => [
         'required'   => [
             'iss', 'iat', 'exp', 'nbf', 'sub', 'jti', 'grd',
