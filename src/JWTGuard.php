@@ -176,7 +176,8 @@ class JWTGuard implements Guard
     public function login(): ?Token
     {
         if ($this->user) {
-            $builder = $this->jwt->generate($this->user, new Builder, $this->request, $this->name);
+            $builder = new Builder;
+            $this->jwt->generate($this->user, $builder, $this->request, $this->name);
 
             return $this->token = $builder->getToken();
         }
