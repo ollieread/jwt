@@ -1,5 +1,8 @@
 # Laravel JWT
 
+[![Latest Stable Version](https://poser.pugx.org/ollieread/laravel-jwt/v/stable.png)](https://packagist.org/packages/ollieread/laravel-jwt) [![Total Downloads](https://poser.pugx.org/ollieread/laravel-jwt/downloads.png)](https://packagist.org/packages/ollieread/laravel-jwt) [![Latest Unstable Version](https://poser.pugx.org/ollieread/laravel-jwt/v/unstable.png)](https://packagist.org/packages/ollieread/laravel-jwt) [![License](https://poser.pugx.org/ollieread/laravel-jwt/license.png)](https://packagist.org/packages/ollieread/laravel-jwt)
+
+
 This package provides a driver for Laravel auth allowing developers to make use of JWT (JSON Web Tokens).
 
 The reason for its creation was that there aren't really many packages out there that do this, and work. The most popular of the existing packages is out of date, using a JWT library that has been discontinued, and doesn't seem to be updated that often. On top of that, it doesn't integrate exactly with Laravels auth functionality. It's also somewhat over complicated.
