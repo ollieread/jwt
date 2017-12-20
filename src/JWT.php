@@ -69,14 +69,16 @@ class JWT
      * @param \Illuminate\Http\Request                   $request
      * @param string|null                                $guard
      *
+     * @param \Lcobucci\JWT\Token|null                   $token
+     *
      * @return mixed|null
      */
-    public function generate(Authenticatable $user, Builder &$builder, Request $request, string $guard)
+    public function generate(Authenticatable $user, Builder &$builder, Request $request, string $guard, ?Token $token = null)
     {
         if (isset($this->guardGenerators[$guard])) {
-            return call_user_func_array($this->guardGenerators[$guard], compact('builder', 'request', 'user', 'guard'));
+            return call_user_func_array($this->guardGenerators[$guard], compact('builder', 'request', 'user', 'guard', 'token'));
         } else if ($this->generator) {
-            return call_user_func_array($this->generator, compact('builder', 'request', 'user', 'guard'));
+            return call_user_func_array($this->generator, compact('builder', 'request', 'user', 'guard', 'token'));
         }
 
         return null;

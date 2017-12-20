@@ -28,7 +28,7 @@ class ServiceProvider extends BaseServiceProvider
         $jwt = new JWT();
 
         // Set the default generator for tokens
-        $jwt->setDefaultGenerator(function (Builder $builder, Request $request, Authenticatable $user, string $guard): Builder {
+        $jwt->setDefaultGenerator(function (Builder $builder, Request $request, Authenticatable $user, string $guard, ?Token $token): Builder {
             // Get the normalised config for this guard
             $config = $this->normaliseConfig($guard);
 
