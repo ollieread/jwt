@@ -21,6 +21,11 @@ class JWTGuard implements Guard
     use GuardHelpers;
 
     /**
+     * @var \Ollieread\JWT\JWT
+     */
+    protected $jwt;
+
+    /**
      * @var string
      */
     protected $name;
@@ -42,12 +47,14 @@ class JWTGuard implements Guard
     /**
      * JWTGuard constructor.
      *
+     * @param \Ollieread\JWT\JWT                      $jwt
      * @param string                                  $name
      * @param \Illuminate\Contracts\Auth\UserProvider $provider
      * @param \Illuminate\Http\Request                $request
      */
-    public function __construct(string $name, UserProvider $provider, Request $request)
+    public function __construct(JWT $jwt, string $name, UserProvider $provider, Request $request)
     {
+        $this->jwt      = $jwt;
         $this->name     = $name;
         $this->provider = $provider;
         $this->request  = $request;
@@ -55,6 +62,7 @@ class JWTGuard implements Guard
 
     /**
      * @return \Lcobucci\JWT\Token|null
+     * @throws \Ollieread\JWT\InvalidTokenException
      */
     public function token(): ?Token
     {
@@ -62,15 +70,33 @@ class JWTGuard implements Guard
     }
 
     /**
+     * @param \Lcobucci\JWT\Token $token
+     *
+     * @throws \Ollieread\JWT\InvalidTokenException
+     */
+    public function setToken(Token $token)
+    {
+        $this->token = $token;
+
+        if (! $this->validateToken()) {
+            throw new InvalidTokenException('Invalid token');
+        }
+    }
+
+    /**
      * @return \Lcobucci\JWT\Token
+     * @throws \Ollieread\JWT\InvalidTokenException
      */
     public function getTokenForRequest()
     {
         $header = $this->request->headers->get('authorization') ?: $this->request->server->get('HTTP_AUTHORIZATION');
+        $headerPrefix = $this->jwt->config('header_prefix', $this->name);
 
-        if ($header && strpos($header, 'bearer') === 0) {
+        if ($header && stripos($header, $headerPrefix) === 0) {
             $headerParts = explode(' ', $header);
-            return $this->token = (new Parser)->parse($headerParts[1]);
+            $this->setToken((new Parser)->parse($headerParts[1]));
+
+            return $this->token;
         }
 
         return null;
@@ -80,6 +106,7 @@ class JWTGuard implements Guard
      * Get the currently authenticated user.
      *
      * @return \Illuminate\Contracts\Auth\Authenticatable|null
+     * @throws \Ollieread\JWT\InvalidTokenException
      */
     public function user()
     {
@@ -121,13 +148,7 @@ class JWTGuard implements Guard
     public function validateToken(): bool
     {
         if ($this->token) {
-            $validation = new ValidationData;
-            $validation->setIssuer('testing');
-            $validation->setAudience('testing');
-
-            if ($this->token->validate($validation) && $this->token->getClaim('grd') == $this->name) {
-                return ! is_null($this->user());
-            }
+            return $this->jwt->validate($this->request, $this->token, $this->name);
         }
 
         return false;
@@ -156,17 +177,19 @@ class JWTGuard implements Guard
     public function login(): ?Token
     {
         if ($this->user) {
-            return $this->token = (new Builder)
-                ->setIssuer('testing')
-                ->setAudience('testing')
-                ->setId('something123', true)
-                ->setIssuedAt(time())
-                ->setExpiration(time() + 3600)
-                ->set('uid', $this->user->id)
-                ->set('grd', $this->name)
-                ->getToken();
+            $builder = new Builder;
+            $this->jwt->generate($this->user, $builder, $this->request, $this->name);
+
+            return $this->token = $builder->getToken();
         }
 
         return null;
+    }
+
+    public function refresh()
+    {
+        if ($this->token) {
+
+        }
     }
 }
