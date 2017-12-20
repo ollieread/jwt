@@ -90,8 +90,9 @@ class JWTGuard implements Guard
     public function getTokenForRequest()
     {
         $header = $this->request->headers->get('authorization') ?: $this->request->server->get('HTTP_AUTHORIZATION');
+        $headerPrefix = $this->jwt->config('header_prefix', $this->name);
 
-        if ($header && stripos($header, 'bearer') === 0) {
+        if ($header && stripos($header, $headerPrefix) === 0) {
             $headerParts = explode(' ', $header);
             $this->setToken((new Parser)->parse($headerParts[1]));
 
